@@ -39,7 +39,15 @@ Quando un comando fallisce (`exit_code != 0`), il motore esegue una diagnosi eur
 ### 4. Monitor Risorse in Tempo Reale
 - Campiona in background RAM (RSS di processo e figli) e durata con precisione in millisecondi per prevenire attacchi di tipo resource exhaustion.
 
-### 5. Dual Mode: Sviluppatore Umano vs Agente AI
+### 5. Sandboxing a Livello Kernel OS (`--sandbox`)
+- **macOS Seatbelt (`sandbox-exec`)**: Confinamento rigido dei permessi di scrittura filesystem (accesso consentito esclusivamente alla cartella del workspace corrente e `/tmp`). Tentativi di scrittura su `/opt`, `/etc`, `/usr` o cartelle utente esterne vengono bloccati a livello kernel con `Operation not permitted`.
+- **Linux Bubblewrap (`bwrap`)**: Isolamento PID, rete e mount point unshare.
+
+### 6. Server MCP (Model Context Protocol) Nativo (`guardrail mcp`)
+- Implementa le specifiche standard MCP via JSON-RPC stdio.
+- Permette a qualsiasi assistente o client AI compatibile (Claude Desktop, Cursor, Antigravity, cline) di invocare `safe_run_command` come tool nativo sicuro invece di dare accesso diretto e non protetto alla shell.
+
+### 7. Dual Mode: Sviluppatore Umano vs Agente AI
 - **Modalità Umana (`session`)**: Shell interattiva protetta con formattazione Rich, box visivi e conferma per i comandi critici.
 - **Modalità Agente (`exec --json-output`)**: Output JSON standardizzato (conforme a Pydantic) contenente `diagnostics` e `quick_fix_command`, ideale per dare agli agenti capacità di **auto-healing autonomo**.
 
@@ -72,6 +80,17 @@ uv run python -m guardrail_cli.main exec "curl -H 'Authorization: Bearer ghp_123
 ### Esecuzione con Timeout Guard
 ```bash
 uv run python -m guardrail_cli.main exec --timeout 5 "sleep 10"
+```
+
+### Esecuzione in Sandbox Kernel OS
+```bash
+# Esecuzione confinata nel workspace: i tentativi di scrittura su /opt o cartelle esterne falliscono
+uv run python -m guardrail_cli.main exec --sandbox "touch /opt/forbidden.txt"
+```
+
+### Avvio Server MCP per Agenti AI
+```bash
+uv run python -m guardrail_cli.main mcp
 ```
 
 ### Auto-Diagnostica per Agenti Autonomi (Output JSON)

@@ -26,10 +26,11 @@ def cli():
 @click.option("--strict", is_flag=True, default=False, help="In strict mode blocca anche comandi di warning.")
 @click.option("--timeout", type=int, default=None, help="Timeout in secondi per il comando (default: 120s).")
 @click.option("--snapshot", is_flag=True, default=False, help="Crea uno snapshot del workspace prima di eseguire e calcola il diff.")
+@click.option("--sandbox", is_flag=True, default=False, help="Esegue il comando confinato nel sandbox OS (Seatbelt/bwrap).")
 @click.option("--config", "config_file", type=str, default=None, help="Path a file di configurazione YAML.")
 @click.option("--auto-fix", is_flag=True, default=False, help="Esegue automaticamente il Quick Fix diagnostico se disponibile e sicuro.")
 @click.option("--json-output", is_flag=True, help="Restituisce il risultato strutturato in formato JSON (ideale per agenti AI).")
-def execute_cmd(command, strict, timeout, snapshot, config_file, auto_fix, json_output):
+def execute_cmd(command, strict, timeout, snapshot, sandbox, config_file, auto_fix, json_output):
     """Esegue un comando singolo applicando guardrail, audit, timeout, monitor risorse e diagnostica."""
     full_cmd = " ".join(command)
     cfg = load_config(config_file)
@@ -73,7 +74,7 @@ def execute_cmd(command, strict, timeout, snapshot, config_file, auto_fix, json_
         console.print(f"[bold yellow]⚠️  Attenzione:[/bold yellow] Rilevata operazione sensibile: {', '.join(check.reasons)}")
 
     # 2. Esecuzione del comando
-    result = executor.run(full_cmd, capture_snapshot=snapshot)
+    result = executor.run(full_cmd, capture_snapshot=snapshot, use_sandbox=sandbox)
 
     if audit_logger:
         audit_logger.log_event(full_cmd, check, result, duration_ms=result.duration_ms)
@@ -259,6 +260,19 @@ def view_audit_logs(limit, config_file):
             continue
 
     console.print(table)
+
+@cli.command("mcp")
+@click.option("--config", "config_file", type=str, default=None, help="Path a file di configurazione YAML.")
+def start_mcp_server(config_file):
+    """Avvia il server MCP (Model Context Protocol) per integrazione con Claude Desktop, Cursor e agenti autonomi."""
+    import asyncio
+    from .mcp_server import GuardrailMCPServer
+    cfg = load_config(config_file)
+    server = GuardrailMCPServer(cfg)
+    try:
+        asyncio.run(server.run_stdio())
+    except (KeyboardInterrupt, EOFError):
+        pass
 
 def main():
     cli()

@@ -9,6 +9,7 @@ from .diagnostics import SystemDiagnosticEngine
 from .config import GuardrailConfig
 from .rollback import RollbackManager, WorkspaceSnapshot
 from .monitor import ProcessMonitor
+from .sandbox import OSSandboxRunner
 
 class Executor:
     def __init__(self, guardrail: SecurityGuardrail, diagnostic_engine: SystemDiagnosticEngine, config: GuardrailConfig):
@@ -16,8 +17,9 @@ class Executor:
         self.diagnostic_engine = diagnostic_engine
         self.config = config
         self.rollback_mgr = RollbackManager(config.working_dir_restriction)
+        self.sandbox_runner = OSSandboxRunner()
 
-    def run(self, command: str, capture_snapshot: bool = False) -> ExecutionResult:
+    def run(self, command: str, capture_snapshot: bool = False, use_sandbox: bool = False) -> ExecutionResult:
         start_time = time.time()
         cwd = self.config.working_dir_restriction or os.getcwd()
 
@@ -29,15 +31,25 @@ class Executor:
                 pass
 
         try:
-            process = subprocess.Popen(
-                command,
-                shell=True,
-                executable="/bin/zsh",
-                cwd=cwd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
+            if use_sandbox:
+                cmd_args = self.sandbox_runner.wrap_command(command)
+                process = subprocess.Popen(
+                    cmd_args,
+                    cwd=cwd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+            else:
+                process = subprocess.Popen(
+                    command,
+                    shell=True,
+                    executable="/bin/zsh",
+                    cwd=cwd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
 
             # Monitor delle risorse in thread separato
             monitor = ProcessMonitor(process.pid)
