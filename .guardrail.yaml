@@ -1,0 +1,15 @@
+# Configurazione di default per Guardrail CLI
+strict_mode: false
+timeout_seconds: 30
+max_output_kb: 512
+
+# Whitelist facoltativa (se vuota, tutti i comandi non-bloccati sono permessi)
+allowed_commands_whitelist: []
+
+# Pattern regex personalizzati da bloccare
+custom_blocked_patterns:
+  - "(?i)npm\\s+publish" # previene release accidentali su npm
+
+audit:
+  enabled: true
+  log_file: "~/.guardrail/audit.jsonl"

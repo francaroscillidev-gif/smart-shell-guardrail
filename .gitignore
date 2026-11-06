@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Aggiunti automaticamente da push-to-github
+node_modules
+.env
+.env.local
+.DS_Store
+.push-to-github
