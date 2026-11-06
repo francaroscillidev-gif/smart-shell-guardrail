@@ -129,3 +129,14 @@ Distribuito sotto licenza **Apache 2.0**. Consulta [`LICENSE`](LICENSE) per ulte
 **Franca Roscilli**  
 - **Email**: francaroscillidev@gmail.com  
 - **GitHub**: [@francaroscillidev-gif](https://github.com/francaroscillidev-gif)
+
+---
+
+## 📬 Contact, Support & Commercial Inquiries
+
+If you have questions, feedback, enterprise integration requests, or custom agent governance needs, feel free to reach out directly:
+
+- **Lead Developer & Maintainer**: Franca Roscilli
+- **Email**: [francaroscillidev@gmail.com](mailto:francaroscillidev@gmail.com)
+- **GitHub**: [@francaroscillidev-gif](https://github.com/francaroscillidev-gif)
+- **Bug Reports & Feature Requests**: [Open an issue on GitHub](https://github.com/francaroscillidev-gif/smart-shell-guardrail/issues)
