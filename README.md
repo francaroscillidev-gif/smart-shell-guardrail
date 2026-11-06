@@ -20,7 +20,10 @@ Dare accesso diretto alla shell a un agente autonomo (es. via tool `run_command`
 
 ### 1. Pre-execution Security Guardrail
 - **Pattern Matcher di Sicurezza**: Riconosce e blocca istantaneamente comandi pericolosi (`rm -rf /`, `mkfs`, fork bomb, `dd` su partizioni raw).
-- **Scanner Anti-Secret Leak**: Blocca token GitHub (`ghp_`), AWS Access Keys (`AKIA`), Google API Keys, Stripe keys, certificati privati e bearer token passati in chiaro.
+- **Scanner Anti-Secret Leak con Entropia di Shannon**: 
+  - Regex deterministiche per token noti (GitHub, AWS, Stripe, Slack, certificati RSA/SSH).
+  - Algoritmo di **Shannon Entropy** ($H(X) \ge 4.3$) per intercettare password complesse, token e chiavi crittografiche casuali non categorizzate preventivamente.
+- **AST Pipeline Parser (`parser.py`)**: Scompone pipeline complesse (`|`), redirezioni (`>`, `>>`) e concatenazioni logiche (`&&`, `||`, `;`) per analizzare atomicamente ogni singolo sottocomando, prevenendo tentativi di evasione da guardrail.
 - **Tassonomia dei Rischi**: Classifica i comandi in `SAFE`, `WARNING` e `BLOCKED`. Supporta `--strict` per forzare l'approvazione sui warning.
 - **Configurazione Estensibile (`.guardrail.yaml`)**: Regole custom per progetto (es. blocco di `npm publish` o comandi SQL di alterazione).
 
