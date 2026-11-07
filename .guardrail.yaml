@@ -1,4 +1,4 @@
-# Configurazione di default per Guardrail CLI
+# Configurazione avanzata per Guardrail CLI Enterprise
 strict_mode: false
 timeout_seconds: 30
 max_output_kb: 512
@@ -9,6 +9,17 @@ allowed_commands_whitelist: []
 # Pattern regex personalizzati da bloccare
 custom_blocked_patterns:
   - "(?i)npm\\s+publish" # previene release accidentali su npm
+
+network:
+  # Se true, blocca connessioni esterne eccetto quelle in allowed_domains
+  block_external_egress: false
+  allowed_domains:
+    - "github.com"
+    - "api.github.com"
+    - "pypi.org"
+    - "files.pythonhosted.org"
+    - "registry.npmjs.org"
+    - "crates.io"
 
 audit:
   enabled: true

@@ -23,6 +23,12 @@ Dare accesso diretto alla shell a un agente autonomo (es. via tool `run_command`
 - **Scanner Anti-Secret Leak con Entropia di Shannon**: 
   - Regex deterministiche per token noti (GitHub, AWS, Stripe, Slack, certificati RSA/SSH).
   - Algoritmo di **Shannon Entropy** ($H(X) \ge 4.3$) per intercettare password complesse, token e chiavi crittografiche casuali non categorizzate preventivamente.
+- **Motore Anti-Tamper & De-offuscamento Dinamico (`antitamper.py`)**:
+  - Intercetta payload offuscati in **Base64** inviati in pipe a shell (`echo ... | base64 -d | sh`), decodifica il payload in chiaro in sandbox e lo sottopone a scansione prima dell'esecuzione.
+  - Neutralizza tecniche di quote tampering (es. `r''m -''rf /`) e hex escapes (`\x72\x6d`).
+- **Network Egress Guard & Data Exfiltration Blocker (`network.py`)**:
+  - Ispezione delle connessioni in uscita nei comandi shell (`curl`, `wget`, `nc`, `ssh`, `scp`).
+  - Blocca l'esfiltrazione verso host non autorizzati se `block_external_egress: true` in configurazione, consentendo solo host locali o domini in whitelist.
 - **AST Pipeline Parser (`parser.py`)**: Scompone pipeline complesse (`|`), redirezioni (`>`, `>>`) e concatenazioni logiche (`&&`, `||`, `;`) per analizzare atomicamente ogni singolo sottocomando, prevenendo tentativi di evasione da guardrail.
 - **Tassonomia dei Rischi**: Classifica i comandi in `SAFE`, `WARNING` e `BLOCKED`. Supporta `--strict` per forzare l'approvazione sui warning.
 - **Configurazione Estensibile (`.guardrail.yaml`)**: Regole custom per progetto (es. blocco di `npm publish` o comandi SQL di alterazione).
@@ -34,7 +40,10 @@ Quando un comando fallisce (`exit_code != 0`), il motore esegue una diagnosi eur
 - **Comando / Modulo mancante**: Trova il gestore di pacchetti locale (`uv`, `npm`, `brew`) e formula il comando di installazione.
 - **Git Lock**: Rileva blocchi `.git/index.lock` e propone la rimozione sicura.
 
-### 3. Snapshot, Diff & Rollback del Workspace (`--snapshot`)
+### 3. PTY Interattivo Nativo con Hardware Keystroke Interception (`guardrail pty`)
+- Pseudo-terminale POSIX trasparente con passaggio di terminal raw: supporta programmi complessi curses (come `vim`, `nano`, `htop`, `git log`) bloccando i comandi malevoli digitati in tempo reale sul ritorno a capo prima che raggiungano la shell.
+
+### 4. Snapshot, Diff & Rollback del Workspace (`--snapshot`)
 - Effettua uno snapshot leggero prima dell'esecuzione del comando.
 - Restituisce il delta puntuale di file creati, modificati e cancellati per un controllo granulare dell'impatto dei comandi.
 - Fornisce capacità di ripristino istantaneo in caso di errore.

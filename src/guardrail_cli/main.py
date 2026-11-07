@@ -128,6 +128,24 @@ def execute_cmd(command, strict, timeout, snapshot, sandbox, config_file, auto_f
 
     sys.exit(result.exit_code)
 
+@cli.command("pty")
+@click.option("--config", "config_file", type=str, default=None, help="Path a file di configurazione YAML.")
+def start_native_pty(config_file):
+    """Avvia una vera subshell PTY interattiva (supporta vim, nano, htop con guardrail in tempo reale)."""
+    from .pty_session import PTYInteractiveInterceptionEngine
+    cfg = load_config(config_file)
+    guardrail = SecurityGuardrail(cfg)
+    console.print(Panel(
+        "[bold cyan]Avvio Pseudo-Terminale (PTY) con Intercettazione Hardware[/bold cyan]\n"
+        "Tutti i keystroke e i comandi vengono ispezionati in tempo reale prima di raggiungere la shell.\n"
+        "Supporta completamente programmi curses, editor (vim, nano) e segnali di controllo.\n"
+        "Digita [bold]exit[/bold] per tornare al terminale host.",
+        title="🖥️ Native PTY Guardrail",
+        border_style="cyan"
+    ))
+    pty_engine = PTYInteractiveInterceptionEngine(guardrail, cfg)
+    pty_engine.spawn_interactive_pty()
+
 @cli.command("session")
 @click.option("--strict", is_flag=True, default=False, help="In strict mode blocca anche comandi di warning.")
 @click.option("--config", "config_file", type=str, default=None, help="Path a file di configurazione YAML.")

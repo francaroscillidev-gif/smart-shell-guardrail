@@ -8,6 +8,13 @@ class AuditConfig(BaseModel):
     enabled: bool = True
     log_file: str = os.path.expanduser("~/.guardrail/audit.jsonl")
 
+class NetworkConfig(BaseModel):
+    block_external_egress: bool = False
+    allowed_domains: List[str] = Field(default_factory=lambda: [
+        "github.com", "api.github.com", "pypi.org", "files.pythonhosted.org",
+        "registry.npmjs.org", "crates.io"
+    ])
+
 class GuardrailConfig(BaseModel):
     strict_mode: bool = False
     timeout_seconds: int = 120
@@ -16,13 +23,13 @@ class GuardrailConfig(BaseModel):
     allowed_commands_whitelist: List[str] = Field(default_factory=list)
     custom_blocked_patterns: List[str] = Field(default_factory=list)
     audit: AuditConfig = Field(default_factory=AuditConfig)
+    network: NetworkConfig = Field(default_factory=NetworkConfig)
 
 DEFAULT_CONFIG_PATH = Path(".guardrail.yaml")
 
 def load_config(config_path: Optional[str] = None) -> GuardrailConfig:
     p = Path(config_path) if config_path else DEFAULT_CONFIG_PATH
     if not p.exists():
-        # cerca nella home se non trovato nella cartella corrente
         home_cfg = Path.home() / ".guardrail" / "config.yaml"
         if home_cfg.exists():
             p = home_cfg

