@@ -281,10 +281,70 @@ def view_audit_logs(limit, config_file):
 
 @cli.command("mcp")
 @click.option("--config", "config_file", type=str, default=None, help="Path a file di configurazione YAML.")
-def start_mcp_server(config_file):
-    """Avvia il server MCP (Model Context Protocol) per integrazione con Claude Desktop, Cursor e agenti autonomi."""
+@click.option("--generate-config", type=click.Choice(["claude", "cursor", "antigravity", "generic"], case_sensitive=False), default=None, help="Genera il blocco JSON di configurazione MCP per il client specificato.")
+def start_mcp_server(config_file, generate_config):
+    """Avvia il server MCP (Model Context Protocol) o genera la configurazione per client AI."""
     import asyncio
+    import os
+    import sys
+    from pathlib import Path
     from .mcp_server import GuardrailMCPServer
+
+    if generate_config:
+        # Determina il percorso dell'eseguibile guardrail o uv run
+        guardrail_bin = "guardrail"
+        config_path = str(Path(config_file).resolve()) if config_file else None
+
+        args = ["mcp"]
+        if config_path:
+            args.extend(["--config", config_path])
+
+        mcp_entry = {
+            "command": guardrail_bin,
+            "args": args,
+            "env": {
+                "PYTHONUNBUFFERED": "1"
+            }
+        }
+
+        if generate_config.lower() == "claude":
+            output = {
+                "mcpServers": {
+                    "smart-shell-guardrail": mcp_entry
+                }
+            }
+            console.print(Panel(
+                f"[bold cyan]Configurazione MCP per Claude Desktop[/bold cyan]\n"
+                f"Aggiungi questo blocco al tuo file:\n"
+                f"[dim]~/Library/Application Support/Claude/claude_desktop_config.json[/dim]\n\n"
+                f"[green]{json.dumps(output, indent=2)}[/green]",
+                title="📋 Claude Desktop MCP Config",
+                border_style="cyan"
+            ))
+        elif generate_config.lower() == "cursor":
+            output = {
+                "mcpServers": {
+                    "smart-shell-guardrail": mcp_entry
+                }
+            }
+            console.print(Panel(
+                f"[bold cyan]Configurazione MCP per Cursor[/bold cyan]\n"
+                f"Aggiungi questo blocco nel file del tuo progetto:\n"
+                f"[dim].cursor/mcp.json[/dim]\n\n"
+                f"[green]{json.dumps(output, indent=2)}[/green]",
+                title="📋 Cursor MCP Config",
+                border_style="cyan"
+            ))
+        else:
+            output = {"smart-shell-guardrail": mcp_entry}
+            console.print(Panel(
+                f"[bold cyan]Configurazione MCP Generica / Antigravity[/bold cyan]\n\n"
+                f"[green]{json.dumps(output, indent=2)}[/green]",
+                title="📋 Generic MCP Config",
+                border_style="cyan"
+            ))
+        return
+
     cfg = load_config(config_file)
     server = GuardrailMCPServer(cfg)
     try:

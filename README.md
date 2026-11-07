@@ -78,13 +78,35 @@ Quando un comando fallisce (`exit_code != 0`), il motore esegue una diagnosi eur
 
 ## 🚀 Installazione e Avvio Rapido
 
-Questo progetto utilizza [uv](https://docs.astral.sh/uv/) per una gestione delle dipendenze ultra-veloce.
+### Installazione Universale in 1 Riga (macOS & Linux)
+Puoi installare globalmente Smart Shell Guardrail con un singolo comando:
+```bash
+curl -fsSL https://raw.githubusercontent.com/francaroscillidev-gif/smart-shell-guardrail/main/install.sh | bash
+```
 
-### Clonare il repository
+Oppure installa manualmente clonando il repository tramite [uv](https://docs.astral.sh/uv/):
 ```bash
 git clone https://github.com/francaroscillidev-gif/smart-shell-guardrail.git
 cd smart-shell-guardrail
+uv sync
 ```
+
+---
+
+## 🤖 Integrazione MCP con Claude Desktop, Cursor & Agenti AI
+
+Smart Shell Guardrail può essere collegato direttamente a **Claude Desktop**, **Cursor** o **Antigravity** tramite il protocollo MCP per proteggere tutte le sessioni agentiche.
+
+### Generazione Automatica Configurazione
+```bash
+# Per Claude Desktop:
+guardrail mcp --generate-config claude
+
+# Per Cursor:
+guardrail mcp --generate-config cursor
+```
+
+Oppure consulta il file di esempio pronto all'uso: [`mcp-config.example.json`](mcp-config.example.json).
 
 ### Esecuzione comando singolo
 ```bash

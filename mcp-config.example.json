@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "smart-shell-guardrail": {
+      "command": "guardrail",
+      "args": ["mcp"],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}
