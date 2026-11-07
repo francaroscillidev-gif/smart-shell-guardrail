@@ -1,7 +1,18 @@
-# Smart CLI / Shell Agent "Guardrail"
+<p align="center">
+  <img src="assets/logo.png" alt="Smart Shell Guardrail Logo" width="180" height="180" />
+</p>
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+<h1 align="center">Smart CLI / Shell Agent "Guardrail"</h1>
+
+<p align="center">
+  <b>AI-Powered Terminal Copilot & Autonomous Agent Security Sandbox</b>
+</p>
+
+<p align="center">
+  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12+-blue.svg" alt="Python Version"></a>
+  <a href="https://github.com/francaroscillidev-gif/smart-shell-guardrail/stargazers"><img src="https://img.shields.io/github/stars/francaroscillidev-gif/smart-shell-guardrail?style=social" alt="GitHub Stars"></a>
+</p>
 
 Un guardrail intelligente da terminale e copilot diagnostico in tempo reale per sviluppatori umani e agenti autonomi di intelligenza artificiale.
 

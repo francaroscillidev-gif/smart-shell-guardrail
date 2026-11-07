@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background subtle dark gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#1e2238"/>
+      <stop offset="70%" stop-color="#0c0e17"/>
+      <stop offset="100%" stop-color="#07080d"/>
+    </radialGradient>
+
+    <!-- Shield metallic rim gradient -->
+    <linearGradient id="shieldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="35%" stop-color="#818cf8"/>
+      <stop offset="70%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <!-- Shield inner body gradient -->
+    <linearGradient id="shieldInner" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#14192b"/>
+      <stop offset="60%" stop-color="#0b0e1a"/>
+      <stop offset="100%" stop-color="#05070f"/>
+    </linearGradient>
+
+    <!-- Terminal screen gradient -->
+    <linearGradient id="terminalBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+
+    <!-- Neon Cyan glow for prompt and circuit -->
+    <linearGradient id="neonCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <!-- Emerald safety pulse gradient -->
+    <linearGradient id="emeraldPulse" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <!-- Glow filters for cyber elements -->
+    <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="shieldGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feColorMatrix type="matrix" values="
+        0 0 0 0 0.22   
+        0 0 0 0 0.74   
+        0 0 0 0 0.97   
+        0 0 0 0.35 0" />
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="512" height="512" rx="100" fill="url(#bgGlow)"/>
+
+  <!-- Outer Cyber Grid / Tech Lines -->
+  <g opacity="0.18" stroke="#38bdf8" stroke-width="1.5">
+    <circle cx="256" cy="256" r="215" fill="none" stroke-dasharray="8 8"/>
+    <circle cx="256" cy="256" r="235" fill="none" stroke-dasharray="2 12"/>
+    <line x1="256" y1="20" x2="256" y2="55"/>
+    <line x1="256" y1="457" x2="256" y2="492"/>
+    <line x1="20" y1="256" x2="55" y2="256"/>
+    <line x1="457" y1="256" x2="492" y2="256"/>
+  </g>
+
+  <!-- SHIELD CONTAINER (Aegis Guardian) -->
+  <g filter="url(#shieldGlow)">
+    <!-- Outer Shield Rim -->
+    <path d="M 256,60 
+             C 350,60 415,85 415,85 
+             C 415,225 385,355 256,445 
+             C 127,355 97,225 97,85 
+             C 97,85 162,60 256,60 Z" 
+          fill="url(#shieldBorder)"/>
+
+    <!-- Inner Shield Body -->
+    <path d="M 256,72 
+             C 342,72 401,95 401,95 
+             C 401,220 373,342 256,428 
+             C 139,342 111,220 111,95 
+             C 111,95 170,72 256,72 Z" 
+          fill="url(#shieldInner)"/>
+  </g>
+
+  <!-- INTEGRATED TERMINAL WINDOW -->
+  <g transform="translate(146, 135)">
+    <!-- Terminal Outer Frame -->
+    <rect width="220" height="180" rx="18" fill="url(#terminalBg)" stroke="#22d3ee" stroke-opacity="0.4" stroke-width="2.5"/>
+    
+    <!-- Window Header Bar -->
+    <path d="M 0,18 C 0,8 8,0 18,0 L 202,0 C 212,0 220,8 220,18 L 220,36 L 0,36 Z" fill="#1e293b"/>
+    <line x1="0" y1="36" x2="220" y2="36" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- Window Control Buttons (Red, Yellow, Green Security Status) -->
+    <circle cx="22" cy="18" r="5" fill="#ef4444"/>
+    <circle cx="38" cy="18" r="5" fill="#f59e0b"/>
+    <circle cx="54" cy="18" r="5" fill="#10b981"/>
+
+    <!-- Terminal Title Accent -->
+    <rect x="85" y="15" width="50" height="6" rx="3" fill="#475569" opacity="0.7"/>
+
+    <!-- Terminal Command Line Prompt: `>_` -->
+    <!-- Chevron '>' -->
+    <path d="M 30,68 L 52,85 L 30,102" fill="none" stroke="url(#neonCyan)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#cyanGlow)"/>
+
+    <!-- Shield Keyhole / Cursor Core -->
+    <rect x="66" y="94" width="28" height="6" rx="3" fill="#38bdf8" filter="url(#cyanGlow)">
+      <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- Synthetic Safe AI Telemetry / Waveform inside terminal -->
+    <path d="M 30,140 Q 55,120 75,140 T 120,140 T 160,130 T 190,140" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  </g>
+
+  <!-- AI GUARDIAN BRAIN / CIRCUIT NODES (Center Bottom of Shield) -->
+  <g transform="translate(256, 360)">
+    <!-- Circuit Lines emanating to bottom apex -->
+    <path d="M -50,-20 L -30,5 L -10,5 L 0,25 L 10,5 L 30,5 L 50,-20" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.8"/>
+    
+    <!-- Central Security Lock / Verification Node -->
+    <circle cx="0" cy="5" r="14" fill="#0f172a" stroke="#22d3ee" stroke-width="3" filter="url(#cyanGlow)"/>
+    <circle cx="0" cy="5" r="6" fill="#10b981"/>
+
+    <!-- Branch Nodes -->
+    <circle cx="-30" cy="5" r="3.5" fill="#38bdf8"/>
+    <circle cx="30" cy="5" r="3.5" fill="#38bdf8"/>
+    <circle cx="0" cy="25" r="3" fill="#a855f7"/>
+  </g>
+
+  <!-- TOP CREST: AI NEURAL SPARK -->
+  <g transform="translate(256, 85)" filter="url(#cyanGlow)">
+    <polygon points="0,-12 4,-3 13,0 4,3 0,12 -4,3 -13,0 -4,-3" fill="#38bdf8"/>
+  </g>
+</svg>
