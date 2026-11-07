@@ -1,0 +1,24 @@
+name: 💡 Feature Request / Nuova Regola
+description: Proponi una nuova funzionalità, un'euristica diagnostica aggiuntiva o un nuovo pattern di sicurezza.
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Quale problema risolve questa proposta?
+      description: Descrivi in modo chiaro il caso d'uso o la vulnerabilità che vorresti mitigare.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Soluzione Proposta
+      description: Come dovrebbe funzionare la nuova feature o diagnostica?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Considerate
+      description: Hai preso in considerazione soluzioni alternative o workaround?

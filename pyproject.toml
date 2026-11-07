@@ -1,13 +1,38 @@
 [project]
 name = "guardrail-cli"
-version = "0.1.0"
-description = "Smart CLI / Shell Agent Guardrail and Copilot"
+version = "0.2.0"
+description = "Smart CLI / Shell Agent Guardrail, Copilot and Kernel Sandbox Architecture"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 authors = [
     { name = "franca roscilli", email = "francaroscillidev@gmail.com" }
 ]
 requires-python = ">=3.12"
+keywords = [
+    "ai-agent",
+    "guardrail",
+    "shell-copilot",
+    "mcp",
+    "terminal-sandbox",
+    "security",
+    "seatbelt",
+    "bubblewrap",
+    "auto-healing"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: System :: Systems Administration",
+    "Topic :: System :: Shells",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
 dependencies = [
     "click>=8.5.0",
     "gitpython>=3.2.1",

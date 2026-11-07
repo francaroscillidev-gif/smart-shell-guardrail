@@ -1,0 +1,42 @@
+name: 🐛 Bug Report / False Positive
+description: Segnala un malfunzionamento, un comando valido bloccato per errore o un'anomalia diagnostica.
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Grazie per aver dedicato del tempo a segnalare questo problema in **Smart Shell Guardrail**!
+  - type: textarea
+    id: command
+    attributes:
+      label: Comando Eseguito
+      description: Inserisci il comando esatto che ha generato il comportamento inatteso.
+      placeholder: guardrail exec "..."
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Sistema Operativo
+      options:
+        - macOS (Apple Silicon M-series)
+        - macOS (Intel)
+        - Linux (Ubuntu / Debian)
+        - Linux (Arch / Fedora)
+        - Altro
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Atteso
+      description: Cosa ti aspettavi che accadesse?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento Effettivo / Output
+      description: Incolla l'output della console o il JSON restituito.
+    validations:
+      required: true

@@ -18,6 +18,39 @@ Un guardrail intelligente da terminale e copilot diagnostico in tempo reale per 
 
 ---
 
+## 🎮 Terminal Showcase
+
+### 1. Intercettazione Comando Distruttivo / Secret Leak
+```ansi
+╭─────────────────────────── 🛡️ Security Guardrail ────────────────────────────╮
+│ COMANDO BLOCCATO DAL GUARDRAIL                                               │
+│                                                                              │
+│ Livello di rischio: BLOCKED                                                  │
+│ Motivazioni:                                                                 │
+│  • Blocco di sicurezza: Tentativo di cancellazione ricorsiva forzata della   │
+│ root o home directory (`rm -rf /` o `~`).                                    │
+│  • Rilevato possibile secret: GitHub Personal Access Token (ghp_***)         │
+│                                                                              │
+│ Suggerimento: Usa variabili d'ambiente (es. $MY_TOKEN) invece di inserire    │
+│ segreti nel comando.                                                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+### 2. Autodiagnosi Istantanea Conflitto Porta (Port Already in Use)
+```ansi
+╭───────────────── 🔧 Diagnostic Copilot (port_conflict) ──────────────────────╮
+│ Conflitto di rete: la porta 3000 è già in uso.                               │
+│                                                                              │
+│ Diagnosi & Suggerimenti:                                                     │
+│  • Processo rilevato: 'node' (PID: 4921) -> `node server.js`                 │
+│  • Puoi terminare il processo con: `kill -15 4921`                           │
+│                                                                              │
+│ Quick Fix consigliato: kill -15 4921                                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+---
+
 ## 💡 Il Problema
 Dare accesso diretto alla shell a un agente autonomo (es. via tool `run_command` in loop) è pericoloso:
 1. **Comandi Distruttivi**: Rischio di cancellazione file accidentale (`rm -rf`, sovrascrittura di partizioni o `.git`).

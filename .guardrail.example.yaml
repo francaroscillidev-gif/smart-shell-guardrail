@@ -1,0 +1,69 @@
+# ==============================================================================
+# Smart CLI / Shell Agent "Guardrail" - Enterprise Configuration Reference
+# File: .guardrail.example.yaml
+# ==============================================================================
+
+# Modalità Strict: se impostata a true, blocca immediatamente anche i comandi
+# catalogati con livello WARNING (es. git push --force, kill -9, download di script)
+# invece di chiedere conferma interattiva. Consigliata per agenti AI autonomi non supervisionati.
+strict_mode: false
+
+# Timeout massimo di esecuzione in secondi per comando.
+# Previene loop infiniti, comandi interattivi rimasti in attesa di stdin e freeze.
+timeout_seconds: 60
+
+# Dimensione massima dell'output (stdout/stderr) catturato in Kilobytes.
+# Gli output eccedenti vengono troncati in modo sicuro evitando buffer overflow
+# ed eccessivo consumo di context-window nei modelli LLM.
+max_output_kb: 512
+
+# Confinamento della working directory (opzionale):
+# Se specificato, i comandi possono essere eseguiti solo ed esclusivamente all'interno
+# del percorso specificato. Se lasciato nullo (null), usa la cartella corrente.
+working_dir_restriction: null
+
+# Whitelist di comandi consentiti (opzionale):
+# Se non vuota, permette SOLO l'esecuzione dei comandi il cui eseguibile principale
+# figura in questo elenco. Tutti gli altri comandi vengono bloccati.
+# Esempio per agente di sola lettura:
+# allowed_commands_whitelist:
+#   - ls
+#   - git
+#   - cat
+#   - grep
+#   - python3
+allowed_commands_whitelist: []
+
+# Pattern Regex personalizzati da intercettare e bloccare:
+# Ideale per regole di conformità aziendale e salvaguardia di ambienti critici.
+custom_blocked_patterns:
+  # Previene pubblicazioni accidentali di pacchetti
+  - "(?i)npm\\s+publish"
+  - "(?i)twine\\s+upload"
+  # Blocca distruzione di infrastruttura cloud da shell
+  - "(?i)terraform\\s+destroy"
+  - "(?i)pulumi\\s+destroy"
+  # Blocca cancellazione di cluster o namespace kubernetes
+  - "(?i)kubectl\\s+delete\\s+(namespace|ns|all|node|nodes|cluster)"
+
+# Politica di Controllo del Traffico di Rete in Uscita (Network Egress)
+network:
+  # Se true, blocca qualsiasi tentativo di connessione verso host esterni
+  # non inclusi esplicitamente nella lista `allowed_domains`.
+  block_external_egress: false
+
+  # Domini approvati per download pacchetti, API e repository
+  allowed_domains:
+    - "github.com"
+    - "api.github.com"
+    - "pypi.org"
+    - "files.pythonhosted.org"
+    - "registry.npmjs.org"
+    - "crates.io"
+
+# Tracciamento e Audit Trail
+audit:
+  # Abilita il log strutturato in formato JSON Lines (JSONL)
+  enabled: true
+  # Percorso del file di audit (supporta l'espansione tilde ~)
+  log_file: "~/.guardrail/audit.jsonl"
