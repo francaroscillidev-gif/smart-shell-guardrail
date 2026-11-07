@@ -87,7 +87,14 @@ Quando un comando fallisce (`exit_code != 0`), il motore esegue una diagnosi eur
 ### 3. PTY Interattivo Nativo con Hardware Keystroke Interception (`guardrail pty`)
 - Pseudo-terminale POSIX trasparente con passaggio di terminal raw: supporta programmi complessi curses (come `vim`, `nano`, `htop`, `git log`) bloccando i comandi malevoli digitati in tempo reale sul ritorno a capo prima che raggiungano la shell.
 
-### 4. Snapshot, Diff & Rollback del Workspace (`--snapshot`)
+### 4. Simulatore di Impatto & Dry-Run Blast Radius (`guardrail simulate`)
+- Esegue una stima preventiva dell'impatto di un comando sul filesystem locale senza eseguirlo.
+- Calcola ricorsivamente il conteggio degli elementi coinvolti in un `rm`, la dimensione dei file impattati o i commit persi in un `git reset --hard`.
+
+### 5. Checkup di Sistema Automatico (`guardrail doctor`)
+- Verifica la corretta installazione dei componenti di isolamento (Apple Seatbelt, Linux Bubblewrap, uv, permessi directory di audit e compatibilità shell).
+
+### 6. Snapshot, Diff & Rollback del Workspace (`--snapshot`)
 - Effettua uno snapshot leggero prima dell'esecuzione del comando.
 - Restituisce il delta puntuale di file creati, modificati e cancellati per un controllo granulare dell'impatto dei comandi.
 - Fornisce capacità di ripristino istantaneo in caso di errore.
@@ -158,6 +165,16 @@ uv run python -m guardrail_cli.main exec "curl -H 'Authorization: Bearer ghp_123
 ### Esecuzione con Timeout Guard
 ```bash
 uv run python -m guardrail_cli.main exec --timeout 5 "sleep 10"
+```
+
+### Simulazione di Impatto & Blast Radius (Dry-Run)
+```bash
+guardrail simulate "rm -rf ./temp_folder"
+```
+
+### Verifica Salute di Sistema
+```bash
+guardrail doctor
 ```
 
 ### Esecuzione in Sandbox Kernel OS

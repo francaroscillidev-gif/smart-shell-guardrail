@@ -21,6 +21,76 @@ def cli():
     """Smart Guardrail CLI: Copilot e Firewall per Shell."""
     pass
 
+@cli.command("simulate")
+@click.argument("command", nargs=-1, required=True)
+@click.option("--json-output", is_flag=True, help="Restituisce il report di simulazione in formato JSON.")
+def simulate_command(command, json_output):
+    """Simula l'esecuzione del comando calcolando l'impatto sul filesystem prima dell'invio (Dry-Run)."""
+    from .simulator import DryRunSimulator
+    full_cmd = " ".join(command)
+    simulator = DryRunSimulator()
+    analysis = simulator.analyze(full_cmd)
+
+    if json_output:
+        print(analysis.model_dump_json(indent=2))
+        return
+
+    color = "green" if analysis.is_safe else ("yellow" if analysis.risk_level.value == "WARNING" else "red")
+    body = (
+        f"Comando: [bold]{full_cmd}[/bold]\n"
+        f"Intento Rilevato: {analysis.intent_summary}\n"
+        f"Livello Rischio: [{color} bold]{analysis.risk_level.value}[/{color} bold]\n\n"
+    )
+
+    if analysis.affected_targets:
+        body += "[bold cyan]Target Identificati:[/bold cyan]\n"
+        for t in analysis.affected_targets:
+            body += f" • {t}\n"
+        body += "\n"
+
+    if analysis.simulated_side_effects:
+        body += "[bold yellow]Effetti Collaterali Simulati:[/bold yellow]\n"
+        for effect in analysis.simulated_side_effects:
+            body += f" ⚠ {effect}\n"
+        body += "\n"
+
+    if analysis.remediation_advice:
+        body += f"[bold green]Suggerimento di Sicurezza:[/bold green] {analysis.remediation_advice}"
+
+    console.print(Panel(
+        body.strip(),
+        title="🔮 Dry-Run & Blast Radius Simulator",
+        border_style=color
+    ))
+
+@cli.command("doctor")
+def run_doctor():
+    """Esegue un checkup completo dell'ambiente di sistema, isolamento e configurazione."""
+    from .doctor import GuardrailDoctor
+    doctor = GuardrailDoctor()
+    report = doctor.run_diagnostics()
+
+    table = Table(title=f"🩺 Smart Shell Guardrail Doctor ({report.platform})")
+    table.add_column("Componente", style="bold")
+    table.add_column("Stato")
+    table.add_column("Dettagli", style="dim")
+
+    for c in report.checks:
+        if c.status == "PASS":
+            status_text = "[bold green]✔ PASS[/bold green]"
+        elif c.status == "WARN":
+            status_text = "[bold yellow]⚠ WARN[/bold yellow]"
+        else:
+            status_text = "[bold red]✖ FAIL[/bold red]"
+
+        table.add_row(c.name, status_text, c.message)
+
+    console.print(table)
+    if report.overall_healthy:
+        console.print("\n[bold green]✓ Il sistema soddisfa tutti i requisiti operativi per l'esecuzione protetta.[/bold green]\n")
+    else:
+        console.print("\n[bold yellow]! Rilevate alcune raccomandazioni di sistema non critiche.[/bold yellow]\n")
+
 @cli.command("exec")
 @click.argument("command", nargs=-1, required=True)
 @click.option("--strict", is_flag=True, default=False, help="In strict mode blocca anche comandi di warning.")
